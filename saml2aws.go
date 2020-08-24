@@ -2,8 +2,9 @@ package saml2aws
 
 import (
 	"fmt"
-	"github.com/versent/saml2aws/pkg/provider/netiq"
 	"sort"
+
+	"github.com/versent/saml2aws/pkg/provider/netiq"
 
 	"github.com/versent/saml2aws/pkg/cfg"
 	"github.com/versent/saml2aws/pkg/creds"
@@ -18,6 +19,7 @@ import (
 	"github.com/versent/saml2aws/pkg/provider/okta"
 	"github.com/versent/saml2aws/pkg/provider/onelogin"
 	"github.com/versent/saml2aws/pkg/provider/pingfed"
+	"github.com/versent/saml2aws/pkg/provider/pingntlm"
 	"github.com/versent/saml2aws/pkg/provider/pingone"
 	"github.com/versent/saml2aws/pkg/provider/shell"
 	"github.com/versent/saml2aws/pkg/provider/shibboleth"
@@ -114,6 +116,11 @@ func NewSAMLClient(idpAccount *cfg.IDPAccount) (SAMLClient, error) {
 			return nil, fmt.Errorf("Invalid MFA type: %v for %v provider", idpAccount.MFA, idpAccount.Provider)
 		}
 		return pingone.New(idpAccount)
+	case "PingNTLM":
+		if invalidMFA(idpAccount.Provider, idpAccount.MFA) {
+			return nil, fmt.Errorf("Invalid MFA type: %v for %v provider", idpAccount.MFA, idpAccount.Provider)
+		}
+		return pingntlm.New(idpAccount)
 	case "JumpCloud":
 		if invalidMFA(idpAccount.Provider, idpAccount.MFA) {
 			return nil, fmt.Errorf("Invalid MFA type: %v for %v provider", idpAccount.MFA, idpAccount.Provider)
